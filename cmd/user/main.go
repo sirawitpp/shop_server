@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 	"sirawit/shop/internal/app"
+	"sirawit/shop/internal/config"
 	"sirawit/shop/internal/repository"
 	"sirawit/shop/internal/service"
-	"sirawit/shop/pkg/config"
 	"sirawit/shop/pkg/pb"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -30,8 +30,8 @@ func main() {
 	// setup server&service
 
 	userRepo := repository.NewUserRepository(db)
-	userSvc := service.NewUserService(userRepo)
-	userServer := app.NewUserServer(config, userSvc)
+	userSvc := service.NewUserService(userRepo, config)
+	userServer := app.NewUserServer(userSvc)
 
 	// server options
 

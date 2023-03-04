@@ -1,4 +1,4 @@
-package token
+package service
 
 import (
 	"sirawit/shop/pkg/random"
@@ -12,7 +12,7 @@ func TestCreateToken(t *testing.T) {
 	sign := random.RandomString(32)
 	username := random.RandomUsername()
 	duration := time.Minute
-	tokenManager := NewJWTManager(sign)
+	tokenManager := NewTokenManager(sign)
 	token, err := tokenManager.CreateToken(username, duration)
 	assert.NotNil(t, token)
 	assert.NoError(t, err)
@@ -28,7 +28,7 @@ func TestExpiredToken(t *testing.T) {
 	sign := random.RandomString(32)
 	username := random.RandomUsername()
 	duration := -time.Minute
-	tokenManager := NewJWTManager(sign)
+	tokenManager := NewTokenManager(sign)
 	token, err := tokenManager.CreateToken(username, duration)
 	assert.NotNil(t, token)
 	assert.NoError(t, err)
@@ -42,7 +42,7 @@ func TestExpiredToken(t *testing.T) {
 func TestInvalidToken(t *testing.T) {
 	sign := random.RandomString(32)
 	token := random.RandomString(32)
-	tokenManager := NewJWTManager(sign)
+	tokenManager := NewTokenManager(sign)
 	assert.NotNil(t, token)
 
 	payload, err := tokenManager.VerifyToken(token)

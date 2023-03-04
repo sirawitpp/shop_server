@@ -1,4 +1,4 @@
-package token
+package service
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type Manager interface {
+type TokenManager interface {
 	CreateToken(username string, duration time.Duration) (string, error)
 	VerifyToken(token string) (any, error)
 }
@@ -16,7 +16,7 @@ type JWTManager struct {
 	sign string
 }
 
-func NewJWTManager(sign string) Manager {
+func NewTokenManager(sign string) TokenManager {
 	return &JWTManager{sign}
 }
 

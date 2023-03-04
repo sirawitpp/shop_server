@@ -1,16 +1,14 @@
-package repository
+package service
 
 import (
 	"log"
 	"os"
 	"sirawit/shop/internal/config"
+	"sirawit/shop/mock"
 	"testing"
-
-	"gorm.io/gorm"
 )
 
-var testDB *gorm.DB
-var testUserQuery UserQuery
+var testUserService UserService
 
 func TestMain(m *testing.M) {
 	var err error
@@ -18,11 +16,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal("cannot load config file", err)
 	}
-	testDB, err = ConnectToUserDB(config.DSN)
-	if err != nil {
-		log.Fatal("cannot connect to user db", err)
-	}
-	testUserQuery = NewUserRepository(testDB)
-
+	testDB := mock.NewUserRepositoryMock()
+	testUserService = NewUserService(testDB, config)
 	os.Exit(m.Run())
 }

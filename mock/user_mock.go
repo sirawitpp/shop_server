@@ -1,20 +1,27 @@
 package mock
 
 import (
+	"errors"
 	"sirawit/shop/internal/model"
-
-	"github.com/stretchr/testify/mock"
+	"sirawit/shop/pkg/errs"
 )
 
-type UserRepositoryMock struct {
-	mock.Mock
-}
+type UserRepositoryMock struct{}
 
 func NewUserRepositoryMock() *UserRepositoryMock {
 	return &UserRepositoryMock{}
 }
 
 func (m *UserRepositoryMock) Register(input model.User) (*model.User, error) {
-	args := m.Called(input)
-	return args.Get(0).(*model.User), args.Error(1)
+	switch input.Username {
+	case "pass":
+		return &input, nil
+	case "username":
+		return nil, errors.New(errs.UsernameAlreadyExists + " " + errs.SQLSTATE23505)
+	case "email":
+		return nil, errors.New(errs.EmailAlreadyExists + " " + errs.SQLSTATE23505)
+	default:
+		return nil, errors.New("")
+	}
+
 }
