@@ -11,27 +11,41 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/zerolog/log"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func main() {
 
 	// load config
+
 	config, err := config.LoadUserConfig(".")
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load config file")
 	}
 
 	// intdb
+
 	db, err := repository.ConnectToUserDB(config.DSN)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot connect to db")
 	}
+
+	//grpc client
+
+	conn, err := grpc.Dial(config.GrpcLoggerServerAddress, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot connet to logger service")
+	}
+	defer conn.Close()
+	log.Info().Msgf("start grpc client at %v", config.GrpcLoggerServerAddress)
+
 	// setup server&service
 
 	userRepo := repository.NewUserRepository(db)
 	userSvc := service.NewUserService(userRepo, config)
-	userServer := app.NewUserServer(userSvc)
+	userServer := app.NewUserServer(userSvc, conn)
 
 	// server options
 
@@ -44,7 +58,8 @@ func main() {
 		},
 	})
 
-	// start server
+	// setup server
+
 	grpcMux := runtime.NewServeMux(jsonOption)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -59,6 +74,9 @@ func main() {
 		Addr:    config.HttpServerAddress,
 		Handler: handler,
 	}
+
+	//start server
+
 	log.Info().Msgf("start server at %v", config.HttpServerAddress)
 	if err = srv.ListenAndServe(); err != nil {
 		log.Fatal().Err(err).Msg("cannot start  server")

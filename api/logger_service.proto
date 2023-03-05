@@ -1,0 +1,10 @@
+syntax = "proto3";
+package pb;
+option go_package = "./pb";
+import "logger_rpc.proto";
+
+
+
+service LoggerService{
+    rpc SendLoginTimestampToLogger(LoginTimestamp)returns (LoginTimestamp){ } ;
+}

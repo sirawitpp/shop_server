@@ -7,10 +7,11 @@ import (
 )
 
 type UserConfig struct {
-	DSN               string        `mapstructure:"DSN"`
-	HttpServerAddress string        `mapstructure:"HTTP_SERVER_ADDRESS"`
-	Sign              string        `mapstructure:"SIGN"`
-	TokenDuration     time.Duration `mapstructure:"TOKEN_DURATION"`
+	DSN                     string        `mapstructure:"DSN"`
+	HttpServerAddress       string        `mapstructure:"HTTP_SERVER_ADDRESS"`
+	Sign                    string        `mapstructure:"SIGN"`
+	TokenDuration           time.Duration `mapstructure:"TOKEN_DURATION"`
+	GrpcLoggerServerAddress string        `mapstructure:"GRPC_LOGGER_SERVER_ADDRESS"`
 }
 
 func LoadUserConfig(path string) (config UserConfig, err error) {

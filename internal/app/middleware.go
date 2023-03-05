@@ -9,7 +9,7 @@ import (
 func HttpLogger(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		handler.ServeHTTP(res, req)
-		logger := log.Debug()
+		logger := log.Info()
 		logger.Str("protocol", "http").
 			Str("method", req.Method).
 			Str("path", req.RequestURI).

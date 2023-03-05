@@ -5,7 +5,9 @@ import (
 	"sirawit/shop/internal/model"
 	"sirawit/shop/internal/service"
 	"sirawit/shop/pkg/pb"
+	"time"
 
+	"github.com/rs/zerolog/log"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -29,6 +31,15 @@ func (u *UserServer) Register(ctx context.Context, req *pb.RegisterReq) (*pb.Reg
 	if err != nil {
 		return nil, err
 	}
+	_, err = u.loggerClient.SendLoginTimestampToLogger(ctx, &pb.LoginTimestamp{
+		Username:       result.User.Username,
+		LoginTimestamp: timestamppb.New(time.Now()),
+	})
+	if err == nil {
+		log.Info().Msg("Send to logger service success")
+	} else {
+		log.Err(err).Msg("Send to logger service fail")
+	}
 	return convertUserToUserRes(result), nil
 }
 
@@ -36,6 +47,17 @@ func (u *UserServer) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginRes,
 	result, err := u.userService.Login(req.GetUsername(), req.GetPassword())
 	if err != nil {
 		return nil, err
+	}
+
+	_, err = u.loggerClient.SendLoginTimestampToLogger(ctx, &pb.LoginTimestamp{
+		Username:       result.User.Username,
+		LoginTimestamp: timestamppb.New(time.Now()),
+	})
+
+	if err == nil {
+		log.Info().Msg("Send to logger service success")
+	} else {
+		log.Err(err).Msg("Send to logger service fail")
 	}
 	return (*pb.LoginRes)(convertUserToUserRes(result)), nil
 }
