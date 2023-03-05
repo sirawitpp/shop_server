@@ -4,9 +4,13 @@ import (
 	"errors"
 	"sirawit/shop/internal/model"
 	"sirawit/shop/pkg/errs"
+
+	"github.com/stretchr/testify/mock"
 )
 
-type UserRepositoryMock struct{}
+type UserRepositoryMock struct {
+	mock.Mock
+}
 
 func NewUserRepositoryMock() *UserRepositoryMock {
 	return &UserRepositoryMock{}
@@ -24,4 +28,9 @@ func (m *UserRepositoryMock) Register(input model.User) (*model.User, error) {
 		return nil, errors.New("")
 	}
 
+}
+
+func (m *UserRepositoryMock) FindUserByUsername(username string) (*model.User, error) {
+	args := m.Called(username)
+	return args.Get(0).(*model.User), args.Error(1)
 }

@@ -12,4 +12,10 @@ service UserService{
             body: "*"
         };
     };
+    rpc Login(LoginReq)returns (LoginRes){
+         option (google.api.http) = {
+            post: "/user/login"
+            body: "*"
+        };
+    };
 }

@@ -14,3 +14,13 @@ message RegisterRes{
     User user =1;
     string  token = 2;
 }
+
+message LoginReq{
+    string username = 1;
+    string password =  2;
+}
+
+message LoginRes{
+    User user =1;
+    string  token = 2;
+}

@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func convertUserToRegisterRes(result *service.RegisterRes) *pb.RegisterRes {
+func convertUserToUserRes(result *service.UserRes) *pb.RegisterRes {
 	return &pb.RegisterRes{
 		User: &pb.User{
 			Username:  result.User.Username,
@@ -29,5 +29,13 @@ func (u *UserServer) Register(ctx context.Context, req *pb.RegisterReq) (*pb.Reg
 	if err != nil {
 		return nil, err
 	}
-	return convertUserToRegisterRes(result), nil
+	return convertUserToUserRes(result), nil
+}
+
+func (u *UserServer) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginRes, error) {
+	result, err := u.userService.Login(req.GetUsername(), req.GetPassword())
+	if err != nil {
+		return nil, err
+	}
+	return (*pb.LoginRes)(convertUserToUserRes(result)), nil
 }

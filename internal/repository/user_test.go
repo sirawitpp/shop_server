@@ -9,7 +9,7 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
+	t.Run("pass", func(t *testing.T) {
 		input := model.User{
 			Username: random.RandomUsername(),
 			Password: random.RandomUsername(),
@@ -47,5 +47,30 @@ func TestRegister(t *testing.T) {
 		user2, err := testUserQuery.Register(input2)
 		assert.Empty(t, user2)
 		assert.Error(t, err)
+	})
+}
+
+func TestFindUserByUsername(t *testing.T) {
+	t.Run("failed", func(t *testing.T) {
+		username := random.RandomUsername()
+		result, err := testUserQuery.FindUserByUsername(username)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+	})
+
+	t.Run("pass", func(t *testing.T) {
+		input := model.User{
+			Username: random.RandomUsername(),
+			Password: random.RandomUsername(),
+			Email:    random.RandomEmail(),
+		}
+		user, err := testUserQuery.Register(input)
+		assert.NoError(t, err)
+		assert.NotNil(t, user)
+		result, err := testUserQuery.FindUserByUsername(user.Username)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, user.Email, result.Email)
+		assert.Equal(t, user.Username, result.Username)
 	})
 }

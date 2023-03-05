@@ -9,6 +9,7 @@ import (
 )
 
 var testUserService UserService
+var testDB *mock.UserRepositoryMock
 
 func TestMain(m *testing.M) {
 	var err error
@@ -16,7 +17,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal("cannot load config file", err)
 	}
-	testDB := mock.NewUserRepositoryMock()
+	testDB = mock.NewUserRepositoryMock()
 	testUserService = NewUserService(testDB, config)
 	os.Exit(m.Run())
 }

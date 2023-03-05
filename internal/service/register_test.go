@@ -10,7 +10,7 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
+	t.Run("pass", func(t *testing.T) {
 		user := model.User{
 			Username: "pass",
 			Password: random.RandomString(6),
