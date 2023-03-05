@@ -3,7 +3,6 @@ package mock
 import (
 	"errors"
 	"sirawit/shop/internal/model"
-	"sirawit/shop/pkg/errs"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -18,12 +17,12 @@ func NewUserRepositoryMock() *UserRepositoryMock {
 
 func (m *UserRepositoryMock) Register(input model.User) (*model.User, error) {
 	switch input.Username {
-	case "pass":
+	case "pass123":
 		return &input, nil
 	case "username":
-		return nil, errors.New(errs.UsernameAlreadyExists + " " + errs.SQLSTATE23505)
-	case "email":
-		return nil, errors.New(errs.EmailAlreadyExists + " " + errs.SQLSTATE23505)
+		return nil, errors.New("username already exists" + " " + "SQLSTATE 23505")
+	case "email123":
+		return nil, errors.New("email already exists" + " " + "SQLSTATE 23505")
 	default:
 		return nil, errors.New("")
 	}

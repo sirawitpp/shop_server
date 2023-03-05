@@ -2,7 +2,6 @@ package service
 
 import (
 	"sirawit/shop/internal/model"
-	"sirawit/shop/pkg/errs"
 	"strings"
 
 	"google.golang.org/grpc/codes"
@@ -14,19 +13,36 @@ type UserRes struct {
 	Token string
 }
 
+const (
+	UsernameAlreadyExists = "username already exists"
+	SQLSTATE23505         = "SQLSTATE 23505"
+	EmailAlreadyExists    = "email already exists"
+)
+
 func (u *userService) Register(input model.User) (*UserRes, error) {
-	var err error
+	err := ValidateUsername(input.Username)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	err = ValidatePassword(input.Password)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	err = ValidateEmail(input.Email)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
 	input.Password, err = HashPassword(input.Password)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to hash password %v", err)
 	}
 	user, err := u.db.Register(input)
 	if err != nil {
-		if strings.Contains(err.Error(), errs.SQLSTATE23505) {
+		if strings.Contains(err.Error(), SQLSTATE23505) {
 			if strings.Contains(err.Error(), "username") {
-				return nil, status.Error(codes.AlreadyExists, errs.UsernameAlreadyExists)
+				return nil, status.Error(codes.AlreadyExists, UsernameAlreadyExists)
 			}
-			return nil, status.Error(codes.AlreadyExists, errs.EmailAlreadyExists)
+			return nil, status.Error(codes.AlreadyExists, EmailAlreadyExists)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create user %v", err)
 

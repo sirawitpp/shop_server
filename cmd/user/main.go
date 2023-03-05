@@ -45,7 +45,6 @@ func main() {
 	})
 
 	// start server
-
 	grpcMux := runtime.NewServeMux(jsonOption)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -55,9 +54,10 @@ func main() {
 	}
 	mux := http.NewServeMux()
 	mux.Handle("/", grpcMux)
+	handler := app.HttpLogger(mux)
 	srv := &http.Server{
 		Addr:    config.HttpServerAddress,
-		Handler: mux,
+		Handler: handler,
 	}
 	log.Info().Msgf("start server at %v", config.HttpServerAddress)
 	if err = srv.ListenAndServe(); err != nil {

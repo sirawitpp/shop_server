@@ -6,6 +6,14 @@ import (
 )
 
 func (u *userService) Login(username, password string) (*UserRes, error) {
+	err := ValidateUsername(username)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	err = ValidatePassword(password)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
 	user, err := u.db.FindUserByUsername(username)
 	if err != nil {
 		return nil, status.Error(codes.NotFound, "user not found")
