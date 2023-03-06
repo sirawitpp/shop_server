@@ -1,17 +1,26 @@
 package service
 
-import "sirawit/shop/internal/model"
+import (
+	"sirawit/shop/internal/model"
+	"sirawit/shop/internal/repository"
+)
 
 type LoggerService interface {
-	WriteLogLoginTimestamp(input model.Logger) (*model.Logger, error)
+	InsertLoginTimestamp(input model.Logger) (*model.Logger, error)
 }
 
-type loggerService struct{}
-
-func NewLoggerService() LoggerService {
-	return &loggerService{}
+type loggerService struct {
+	db repository.LoggerQuery
 }
 
-func (l *loggerService) WriteLogLoginTimestamp(input model.Logger) (*model.Logger, error) {
+func NewLoggerService(db repository.LoggerQuery) LoggerService {
+	return &loggerService{db}
+}
+
+func (l *loggerService) InsertLoginTimestamp(input model.Logger) (*model.Logger, error) {
+	err := l.db.InsertLoginTimestamp(input)
+	if err != nil {
+		return nil, err
+	}
 	return &input, nil
 }

@@ -4,6 +4,8 @@ import (
 	"net"
 	"sirawit/shop/internal/app"
 	"sirawit/shop/internal/config"
+	"sirawit/shop/internal/repository"
+	"sirawit/shop/internal/service"
 	"sirawit/shop/pkg/pb"
 
 	"github.com/rs/zerolog/log"
@@ -17,10 +19,21 @@ func main() {
 
 	config, err := config.LoadLoggerConfig(".")
 	if err != nil {
-		log.Err(err).Msg("cannot load config file")
+		log.Fatal().Err(err).Msg("cannot load config file")
 	}
 
-	server := app.NewLoggerServer()
+	//connect to db
+	client, err := repository.ConnectToLoggerDB("")
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot connect to logger db")
+	}
+
+	log.Info().Msg("connect to logger db!")
+
+	//setup service & server
+	loggerRepository := repository.NewLoggerQuery(client)
+	loggerService := service.NewLoggerService(loggerRepository)
+	server := app.NewLoggerServer(loggerService)
 	if err != nil {
 		log.Fatal().Msg("cannot create logger server")
 	}

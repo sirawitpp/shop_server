@@ -5,7 +5,6 @@ import (
 	"sirawit/shop/internal/model"
 	"sirawit/shop/internal/service"
 	"sirawit/shop/pkg/pb"
-	"time"
 
 	"github.com/rs/zerolog/log"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -22,7 +21,7 @@ func convertUserToUserRes(result *service.UserRes) *pb.RegisterRes {
 	}
 }
 
-func (u *UserServer) Register(ctx context.Context, req *pb.RegisterReq) (*pb.RegisterRes, error) {
+func (u *userServer) Register(ctx context.Context, req *pb.RegisterReq) (*pb.RegisterRes, error) {
 	result, err := u.userService.Register(model.User{
 		Username: req.GetUsername(),
 		Password: req.GetPassword(),
@@ -33,7 +32,7 @@ func (u *UserServer) Register(ctx context.Context, req *pb.RegisterReq) (*pb.Reg
 	}
 	_, err = u.loggerClient.SendLoginTimestampToLogger(ctx, &pb.LoginTimestamp{
 		Username:       result.User.Username,
-		LoginTimestamp: timestamppb.New(time.Now()),
+		LoginTimestamp: timestamppb.Now(),
 	})
 	if err == nil {
 		log.Info().Msg("Send to logger service success")
@@ -43,7 +42,7 @@ func (u *UserServer) Register(ctx context.Context, req *pb.RegisterReq) (*pb.Reg
 	return convertUserToUserRes(result), nil
 }
 
-func (u *UserServer) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginRes, error) {
+func (u *userServer) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginRes, error) {
 	result, err := u.userService.Login(req.GetUsername(), req.GetPassword())
 	if err != nil {
 		return nil, err
@@ -51,7 +50,7 @@ func (u *UserServer) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginRes,
 
 	_, err = u.loggerClient.SendLoginTimestampToLogger(ctx, &pb.LoginTimestamp{
 		Username:       result.User.Username,
-		LoginTimestamp: timestamppb.New(time.Now()),
+		LoginTimestamp: timestamppb.Now(),
 	})
 
 	if err == nil {

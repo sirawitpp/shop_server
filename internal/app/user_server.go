@@ -7,18 +7,16 @@ import (
 	"google.golang.org/grpc"
 )
 
-type UserServer struct {
+type userServer struct {
 	userService service.UserService
 	pb.UnimplementedUserServiceServer
-	conn         *grpc.ClientConn
 	loggerClient pb.LoggerServiceClient
 }
 
-func NewUserServer(userService service.UserService, conn *grpc.ClientConn) *UserServer {
+func NewUserServer(userService service.UserService, conn *grpc.ClientConn) *userServer {
 	loggerClient := pb.NewLoggerServiceClient(conn)
-	return &UserServer{
+	return &userServer{
 		userService:  userService,
-		conn:         conn,
 		loggerClient: loggerClient,
 	}
 }

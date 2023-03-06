@@ -15,6 +15,8 @@ dropuserdb:
 	docker exec -it userdb dropdb user
 
 
+loggerdb:
+	docker run --name loggerdb -p 27017:27017 -d mongo:6.0-jammy
 
 
 test:

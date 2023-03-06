@@ -1,8 +1,11 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type Logger struct {
-	Username        string
-	Login_timestamp time.Time
+	ID             string
+	Username       string    `bson:"username"`
+	LoginTimestamp time.Time `bson:"login_timestamp"`
 }

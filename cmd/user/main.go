@@ -31,9 +31,10 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot connect to db")
 	}
+	log.Info().Msg("connect to user db!")
 
 	//grpc client
-
+	log.Info().Msg("try to connect to logger service")
 	conn, err := grpc.Dial(config.GrpcLoggerServerAddress, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot connet to logger service")
@@ -77,7 +78,7 @@ func main() {
 
 	//start server
 
-	log.Info().Msgf("start server at %v", config.HttpServerAddress)
+	log.Info().Msgf("start http server at %v", config.HttpServerAddress)
 	if err = srv.ListenAndServe(); err != nil {
 		log.Fatal().Err(err).Msg("cannot start  server")
 	}
