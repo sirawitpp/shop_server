@@ -1,0 +1,12 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+package pb;
+option go_package = "./pb";
+
+
+message Item{
+    uint64 ID = 1;
+    uint64 product_id = 2;
+    uint64 quantity = 3;
+    google.protobuf.Timestamp created_at =  4;
+}

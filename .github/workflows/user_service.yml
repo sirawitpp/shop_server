@@ -1,0 +1,49 @@
+name: Run unit test
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      userdb:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: user
+          POSTGRES_USER: root
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      productdb:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: product
+          POSTGRES_USER: root
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+
+      - name: Test
+        run: make test
