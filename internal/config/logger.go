@@ -4,6 +4,7 @@ import "github.com/spf13/viper"
 
 type LoggerConfig struct {
 	GrpcLoggerServerAddress string `mapstructure:"GRPC_LOGGER_SERVER_ADDRESS"`
+	DSN                     string `mapstructure:"DSN"`
 }
 
 func LoadLoggerConfig(path string) (config LoggerConfig, err error) {

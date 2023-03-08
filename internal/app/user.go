@@ -13,6 +13,7 @@ import (
 func convertUserToUserRes(result *service.UserRes) *pb.RegisterRes {
 	return &pb.RegisterRes{
 		User: &pb.User{
+			ID:        result.User.ID,
 			Username:  result.User.Username,
 			Email:     result.User.Email,
 			CreatedAt: timestamppb.New(result.User.CreatedAt),

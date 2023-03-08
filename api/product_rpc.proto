@@ -1,0 +1,17 @@
+syntax = "proto3";
+package pb;
+option go_package = "./pb";
+import "product.proto";
+
+
+message GetProductsRes{
+    repeated Product products = 1;
+}
+
+message GetProductsReq{
+    uint64 id = 1;
+}
+
+
+
+

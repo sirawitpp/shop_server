@@ -23,7 +23,7 @@ func main() {
 	}
 
 	//connect to db
-	client, err := repository.ConnectToLoggerDB("")
+	client, err := repository.ConnectToLoggerDB(config.DSN)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot connect to logger db")
 	}

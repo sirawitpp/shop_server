@@ -1,13 +1,27 @@
 package repository
 
 import (
+	"sirawit/shop/internal/config"
 	"sirawit/shop/internal/model"
 	"sirawit/shop/pkg/random"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
+var testDB *gorm.DB
+var testUserQuery UserQuery
+
+func TestConnectToUserDB(t *testing.T) {
+	var err error
+	config, err := config.LoadUserConfig("../../cmd/user")
+	assert.NoError(t, err)
+	testDB, err = ConnectToUserDB(config.DSN)
+	assert.NoError(t, err)
+	testUserQuery = NewUserRepository(testDB)
+
+}
 func TestRegister(t *testing.T) {
 	t.Run("pass", func(t *testing.T) {
 		input := model.User{

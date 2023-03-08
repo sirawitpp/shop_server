@@ -8,50 +8,35 @@ import (
 	"sirawit/shop/internal/repository"
 	"sirawit/shop/internal/service"
 	"sirawit/shop/pkg/pb"
-	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/zerolog/log"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func main() {
-
 	// load config
 
-	config, err := config.LoadUserConfig(".")
+	config, err := config.LoadProductConfig(".")
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot load config file")
 	}
 
 	// intdb
 
-	db, err := repository.ConnectToUserDB(config.DSN)
+	db, err := repository.ConnectToProductDB(config.DSN)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot connect to db")
 	}
-	log.Info().Msg("connect to user db!")
+	log.Info().Msg("connect to product db!")
 
-	//grpc client
+	//setup service && server
 
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	conn, err := grpc.DialContext(ctx, config.GrpcLoggerServerAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Err(err).Msg("cannot connet to logger service")
-	}
-	defer conn.Close()
-	log.Info().Msgf("start grpc client at %v", config.GrpcLoggerServerAddress)
+	productQuery := repository.NewProductQuery(db)
+	productService := service.NewProductService(productQuery, config)
+	server := app.NewProductServer(productService, config)
 
-	// setup server&service
-
-	userRepo := repository.NewUserRepository(db)
-	userSvc := service.NewUserService(userRepo, config)
-	userServer := app.NewUserServer(userSvc, conn)
-
-	// server options
+	//json options
 
 	jsonOption := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
@@ -65,9 +50,9 @@ func main() {
 	// setup server
 
 	grpcMux := runtime.NewServeMux(jsonOption)
-	ctx, cancel = context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	err = pb.RegisterUserServiceHandlerServer(ctx, grpcMux, userServer)
+	err = pb.RegisterProductServiceHandlerServer(ctx, grpcMux, server)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot reigster server")
 	}
